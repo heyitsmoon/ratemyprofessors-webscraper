@@ -3,13 +3,16 @@ from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.options import Options
 import requests
 import time
 from datetime import datetime
 import csv
 
-URL= '#' #ratemyprofessor link here
-driver = webdriver.Chrome()
+URL= 'https://www.ratemyprofessors.com/professor/2549147' #professors link here
+chrome_options = Options()
+chrome_options.add_argument('--headless')
+driver = webdriver.Chrome(options=chrome_options)
 driver.get(URL)
 
 try: #closes popups
@@ -18,7 +21,8 @@ try: #closes popups
 except:
     pass
 
-while(True): #searches for the load more ratings button
+#loads all the reviews
+while(True):
     try:                                                        
         loadmore = driver.find_element(By.XPATH, "//div[@class= 'react-tabs__tab-panel react-tabs__tab-panel--selected']/button[@class='Buttons__Button-sc-19xdot-1 PaginationButton__StyledPaginationButton-txi1dr-1 eUNaBX']")
         driver.execute_script("arguments[0].scrollIntoView();",loadmore)
@@ -34,25 +38,20 @@ while(True): #searches for the load more ratings button
         driver.close()
         break
 
-#converts datascraped into requests for interaction with beautifulSoup        
-response = requests.models.Response() 
-response._content = pagesource.encode('utf-8')
-response.status_code= 200
-response.headers = {'Content-Type': 'text/html'}
-Soup1 = BeautifulSoup(response.content, "html.parser")
+Soup1 = BeautifulSoup(pagesource, "html.parser")
 Soup2 = BeautifulSoup(Soup1.prettify(),"html.parser")
 
-#Gets professors name
-prof_name = Soup2.find('title').get_text().strip() 
-prof_name = prof_name.split(" ")
-
+#gets professors name
+title = Soup2.title.string
+title = title.strip()
+title = title.split(' ')
 professor = ''
-for i in prof_name:
-    if i == 'at':
+for i in title:
+    if i == "at":
         break
     professor += i + " "
-
-professor.strip() 
+professor = professor.strip()    
+print(professor)
 
 #Retrieves professors stats
 feedback_numbers = Soup2.find_all('div',{'class': 'FeedbackItem__FeedbackNumber-uof32n-1 kkESWs'})
@@ -64,11 +63,9 @@ scrapedate =  datetime.today()
 scrapedate = scrapedate.strftime("%Y-%m-%d")
 
 #creates the CSV for professor reviews with the following header
-header = ['professor','TakeAgain%','Difficulty','Rating','Date','','course', 'Review Date', 
-'Quality', 'Difficulty', 'For Credit', 'Attendance', 'Would Take Again', 'Grade', 'Textbook', 
-'Online Class', 'Comment']
+header = ['professor','TakeAgain%','Difficulty','Rating','Date','','course', 'Review Date', 'Quality', 'Difficulty', 'For Credit', 'Attendance', 'Would Take Again', 'Grade', 'Textbook', 'Online Class', 'Comment']
 
-with open(f'C:/directory_here/{professor}Reviews.csv','w',newline='',encoding='UTF8') as f:
+with open(f'E:/python jupyter/{professor}Reviews.csv','w',newline='',encoding='UTF8') as f:
     writer = csv.writer(f)
     writer.writerow(header)
 
@@ -86,6 +83,7 @@ def convert_date(date_string):
     date_obj = datetime.strptime(date_str, '%b-%d-%Y')
     date_obj = date_obj.strftime("%Y-%m-%d")
     return date_obj
+    # review_dict = {'review_date': date_obj}
 
 #retrieves review data for exporting into csv file
 reviews = Soup2.find_all('div',{'class': 'Rating__StyledRating-sc-1rhvpxz-1 jcIQzP'})
@@ -104,7 +102,7 @@ for i in range(len(reviews)):
     reviews_process = reviews[i].get_text().strip()
     reviews_process = reviews_process.split('\n')
 
-    review = [item for item in reviews_process if item.strip() != '' and 
+    new_list = [item for item in reviews_process if item.strip() != '' and 
     item.strip() not in ['😎','😖','😐','awesome','awful','average',':',
     'Participation matters','Group projects','GROUP PROJECTS','PROJECTS','CARES ABOUT STUDENTS',
     'So many papers','Amazing lectures','Caring','Inspirational','Respected',
@@ -116,32 +114,32 @@ for i in range(len(reviews)):
     'Lecture heavy','BEWARE OF POP QUIZZES','Reviewed'] and 
     'Reviewed: ' not in item.strip() and item.strip().isdigit() == False ]
     
-    for i,j in enumerate(review):
-        review[i] = j.strip()
+    for i,j in enumerate(new_list):
+        new_list[i] = j.strip()
     
     #removes repeated course and date values in list
-    review = [item for i, item in enumerate(review) if not (i == 6) and not (i == 7)]
+    new_list = [item for i, item in enumerate(new_list) if not (i == 6) and not (i == 7)]
     
     #goes through list and gives values to variables
-    for i,j in enumerate(review):
+    for i,j in enumerate(new_list):
         
-        course = review[0]
-        review_date = review[1]
-        review_quality = review[3]
-        review_difficulty = review[5]
+        course = new_list[0]
+        review_date = new_list[1]
+        review_quality = new_list[3]
+        review_difficulty = new_list[5]
         if j == 'For Credit' or j== 'For Credit:':
-            review_for_credit = review[i+1]
+            review_for_credit = new_list[i+1]
         if j == 'Attendance' or j== 'Attendance:':
-            review_attendance = review[i+1]
+            review_attendance = new_list[i+1]
         if j == 'Would Take Again' or j== 'Would Take Again:':
-            review_takeAgain  = review[i+1]
+            review_takeAgain  = new_list[i+1]
         if j == 'Grade' or j== 'Grade:':
-            review_grade      = review[i+1]
+            review_grade      = new_list[i+1]
         if j == 'Textbook' or j== 'Textbook:':
-            review_textbook   = review[i+1]
+            review_textbook   = new_list[i+1]
         if j == 'Online Class' or j== 'Online Class:':
-            review_online     = review[i+1]
-        review_comment    = review[i]
+            review_online     = new_list[i+1]
+        review_comment    = new_list[i]
     
     #ignores cases where coursename was not written properly
     if len(course) > 9:
@@ -151,24 +149,19 @@ for i in range(len(reviews)):
     fixed_date = convert_date(fixed_date)
     
     
-    review_dict = {'professor':professor,'takeAgain%':takeAgain,'Total Difficulty':Difficulty,
-    'Total Rating':rating,'Scrape Date':scrapedate,'blank':' ','course': course,
-    'review_date': fixed_date,'review_quality': review_quality,'review_difficulty':review_difficulty,
-    'review_for_credit':review_for_credit, 'review_attendance':review_attendance, 
-    'review_takeAgain':review_takeAgain, 'review_grade':review_grade, 'review_textbook':review_textbook,
-    'review_online': review_online,'review_comment':review_comment}
+    review_dict = {'professor':professor,'takeAgain%' : takeAgain,'Total Difficulty' : Difficulty,'Total Rating' : rating,
+    'Scrape Date' : scrapedate,'blank' : ' ','course': course, 'review_date': fixed_date,'review_quality': review_quality,
+    'review_difficulty' : review_difficulty, 'review_for_credit':review_for_credit, 'review_attendance':review_attendance, 
+    'review_takeAgain':review_takeAgain, 'review_grade':review_grade, 'review_textbook':review_textbook, 'review_online': review_online,'review_comment':review_comment}
     
     #only prints professors overall stats on the first row
     if counter == 1:
-        review_dict = {'professor':'','takeAgain%':'','Total Difficulty':'','Total Rating':'',
-        'Scrape Date':'','blank':' ','course': course, 'review_date': fixed_date,'review_quality': review_quality,
-        'review_difficulty':review_difficulty, 'review_for_credit':review_for_credit, 
-        'review_attendance':review_attendance, 'review_takeAgain':review_takeAgain, 'review_grade':review_grade, 
-        'review_textbook':review_textbook, 'review_online': review_online,'review_comment':review_comment}
+        review_dict = {'professor':'','takeAgain%' : '','Total Difficulty' : '','Total Rating' : '','Scrape Date' : '','blank' : ' ','course': course, 'review_date': fixed_date,'review_quality': review_quality,'review_difficulty' : review_difficulty, 'review_for_credit':review_for_credit, 
+    'review_attendance':review_attendance, 'review_takeAgain':review_takeAgain, 'review_grade':review_grade, 'review_textbook':review_textbook, 'review_online': review_online,'review_comment':review_comment}
     
     #appends data to 
     data = review_dict.values()
-    with open(f'C:/directory_here/{professor}Reviews.csv','a+', newline='', encoding='UTF8') as f:
+    with open(f'E:/python jupyter/{professor}Reviews.csv','a+', newline='', encoding='UTF8') as f:
         writer = csv.writer(f)
         writer.writerow(data)
         counter = 1
