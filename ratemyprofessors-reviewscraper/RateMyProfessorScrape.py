@@ -10,9 +10,9 @@ from datetime import datetime
 import csv
 
 URL= 'https://www.ratemyprofessors.com/professor/2549147' #professors link here
-chrome_options = Options()
+chrome_options = Options() 
 chrome_options.add_argument('--headless')
-driver = webdriver.Chrome(options=chrome_options)
+driver = webdriver.Chrome(options=chrome_options) #makes chrome launch in the background
 driver.get(URL)
 
 try: #closes popups
@@ -38,6 +38,7 @@ while(True):
         driver.close()
         break
 
+#parses the HTML to better search through it
 Soup1 = BeautifulSoup(pagesource, "html.parser")
 Soup2 = BeautifulSoup(Soup1.prettify(),"html.parser")
 
