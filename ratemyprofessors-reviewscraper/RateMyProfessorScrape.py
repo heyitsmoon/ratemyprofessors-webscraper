@@ -32,7 +32,8 @@ while(True):
         time.sleep(1)
         loadmore.click()
         time.sleep(1)
-    except NoSuchElementException: #once the button no longer exists, gras the html and puts it in pagesource
+    #once the button no longer exists, grabs the html and puts it in pagesource
+    except NoSuchElementException: 
         print("Reached bottom of page")
         pagesource = driver.page_source
         driver.close()
