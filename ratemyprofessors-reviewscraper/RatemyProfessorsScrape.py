@@ -9,7 +9,7 @@ import time
 from datetime import datetime
 import csv
 
-URL= 'https://www.ratemyprofessors.com/professor/2549147' #professors link here
+URL= '#' #professors link here
 chrome_options = Options() 
 chrome_options.add_argument('--headless')
 driver = webdriver.Chrome(options=chrome_options) #makes chrome launch in the background
@@ -67,7 +67,7 @@ scrapedate = scrapedate.strftime("%Y-%m-%d")
 #creates the CSV for professor reviews with the following header
 header = ['professor','TakeAgain%','Difficulty','Rating','Date','','course', 'Review Date', 'Quality', 'Difficulty', 'For Credit', 'Attendance', 'Would Take Again', 'Grade', 'Textbook', 'Online Class', 'Comment']
 
-with open(f'E:/python jupyter/{professor}Reviews.csv','w',newline='',encoding='UTF8') as f:
+with open(f'C:/insert_directory_here/{professor} Reviews.csv','w',newline='',encoding='UTF8') as f:
     writer = csv.writer(f)
     writer.writerow(header)
 
@@ -129,17 +129,17 @@ for i in range(len(reviews)):
         review_date = new_list[1]
         review_quality = new_list[3]
         review_difficulty = new_list[5]
-        if j == 'For Credit' or j== 'For Credit:':
+        if 'For Credit' in j:
             review_for_credit = new_list[i+1]
-        if j == 'Attendance' or j== 'Attendance:':
+        if 'Attendance' in j:
             review_attendance = new_list[i+1]
-        if j == 'Would Take Again' or j== 'Would Take Again:':
+        if 'Would Take Again' in j:
             review_takeAgain  = new_list[i+1]
-        if j == 'Grade' or j== 'Grade:':
+        if 'Grade' in j:
             review_grade      = new_list[i+1]
-        if j == 'Textbook' or j== 'Textbook:':
+        if 'Textbook' in j:
             review_textbook   = new_list[i+1]
-        if j == 'Online Class' or j== 'Online Class:':
+        if 'Online Class' in j:
             review_online     = new_list[i+1]
         review_comment    = new_list[i]
     
@@ -163,7 +163,7 @@ for i in range(len(reviews)):
     
     #appends data to 
     data = review_dict.values()
-    with open(f'E:/python jupyter/{professor}Reviews.csv','a+', newline='', encoding='UTF8') as f:
+    with open(f'C:/insert_directory_here/{professor} Reviews.csv','a+', newline='', encoding='UTF8') as f:
         writer = csv.writer(f)
         writer.writerow(data)
         counter = 1
