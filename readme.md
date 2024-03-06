@@ -1,9 +1,7 @@
 # Rate My Professors Web Scraper 
 I started this project with the motivation to learn web scraping. The website https://www.ratemyprofessors.com is a helpful website that allows you to view a professors rating given to them by students who have left a review along with a quality and difficulty score. 
 
-This app allows you to collect all of the reviews given to a professor and neatly export them to a csv file. From this cvs file you can look at all the collective data and make an informed decision on whether you want to take their class in a following semester.
-
-This app can also be used like I have to give yourself a dataset that I can use to practice data sorting in excel. (see last image)
+This app allows you to collect all of the reviews given to a professor and neatly export them to a xlsx file. From this xlsx file you can look at all the collective data and make an informed decision on whether you want to take their class in a following semester.
 
 ## Setup
 
@@ -19,14 +17,10 @@ This app can also be used like I have to give yourself a dataset that I can use 
 
 1) Open the rmp_web_scraper.py file and provide the url and browser.
 
-4) The csv will be saved as the professors "Firstname Lastname Reviews.csv" in the current directory.
+2) The excel worksheet will be saved as the professors "Firstname Lastname Reviews.xlsx" in the current directory.
 
-## CSV Output
+## XLSX Output
 
 ![csv example](/assets/images/csv_example.jpg?raw=true "csv example")
-
-
-## Data Analysis Example
-(Not Provided)
-
-![analysis example](/assets/images/analysis_example.png?raw=true "analysis example")
+![pivot table example](/assets/images/pivot_table_example.jpg?raw=true "pivot table example")
+![dashboard example](/assets/images/dashboard_example.jpg?raw=true "dashboard example")
