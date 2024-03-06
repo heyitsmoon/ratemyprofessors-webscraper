@@ -22,5 +22,5 @@ This app allows you to collect all of the reviews given to a professor and neatl
 ## XLSX Output
 
 ![csv example](/assets/images/csv_example.jpg?raw=true "csv example")
-![pivot table example](/assets/images/pivot_table_example.jpg?raw=true "pivot table example")
-![dashboard example](/assets/images/dashboard_example.jpg?raw=true "dashboard example")
+![pivot table example](/assets/images/pivot_table_example.png?raw=true "pivot table example")
+![dashboard example](/assets/images/dashboard_example.png?raw=true "dashboard example")
