@@ -26,9 +26,9 @@ def QD_overtime(df, sheet, dashboard):
 
 
     # Define data range for average quality and difficulty
-    x_values = Reference(sheet, min_col=5, min_row=3, max_row=len(avg_data))
-    y_values1 = Reference(sheet, min_col=6, min_row=2, max_row=len(avg_data))  
-    y_values2 = Reference(sheet, min_col=7, min_row=2, max_row=len(avg_data)) 
+    x_values = Reference(sheet, min_col=5, min_row=3, max_row=len(avg_data)+3)
+    y_values1 = Reference(sheet, min_col=6, min_row=2, max_row=len(avg_data)+2)  
+    y_values2 = Reference(sheet, min_col=7, min_row=2, max_row=len(avg_data)+2) 
 
     # Add data to the chart
     line_chart.add_data(y_values1, titles_from_data=True)
