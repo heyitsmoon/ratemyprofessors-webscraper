@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 import time
 
 def scrape_data(browser, url):
-    print("Collecting data... (This more reviewws the professor has the longer this will take)")
+    print("Collecting data... (This more reviews the professor has the longer this will take)")
     browser_options = Options() 
     browser_options.add_argument('--headless')
     if browser == "chrome":
@@ -43,7 +43,12 @@ def scrape_data(browser, url):
                 .scroll_by_amount(0, -100)\
                 .perform()
             time.sleep(1)
-            loadmore.click()
+            try:
+                loadmore.click()
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                print("trying again")
+                continue
             time.sleep(1)
         #once the button no longer exists, grabs the html and puts it in pagesource
         except NoSuchElementException: 

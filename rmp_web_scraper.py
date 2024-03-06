@@ -5,7 +5,7 @@ import requests
 import time
 import csv
 import os
-
+import grapher
 #place the url  for the professor you want to get data about
 #URL= 'https://www.ratemyprofessors.com/professor/######' 
 #type in chrome or firefox for whichever one you have
@@ -13,10 +13,24 @@ import os
 
 print("Enter the url of the professor:")
 URL = input()
+while True:
+    if ("www.ratemyprofessors.com/professor/" in URL):
+        break
+    else:
+        print("Enter a valid url of the professor:")
+        URL = input()
 print()
 print("What browser will you be using?")
 print("Type chrome or firefox")
-browser = input()
+browser = input().lower()
+while True:
+    if (browser == "chrome" or browser =="firefox"):
+        break
+    else:
+        print("What browser will you be using?")
+        print("Type chrome or firefox")
+        browser = input().lower()
+
 print()
 
 Soup = scrape_data.scrape_data(browser, URL)
@@ -26,19 +40,19 @@ professor_name = filter_data.get_professor_name(Soup)
 feedback_numbers = Soup.find_all('div',{'class': 'FeedbackItem__FeedbackNumber-uof32n-1 kkESWs'})
 rating = Soup.find('div',{'class': 'RatingValue__Numerator-qw8sqy-2 liyUjw'}).get_text().strip()
 takeAgain = feedback_numbers[0].text.strip()[:2]
-Difficulty= feedback_numbers[1].text.strip()
+Overall_Difficulty= feedback_numbers[1].text.strip()
 scrapedate =  datetime.today()
 scrapedate = scrapedate.strftime("%Y-%m-%d")
 reviews = Soup.find_all('div',{'class': 'Rating__StyledRating-sc-1rhvpxz-1 jcIQzP'})
 
 #creates the CSV for professor reviews with the following header
-header = ['professor_name','TakeAgain%','Difficulty','Rating','Date','','course', 'Review Date', 'Quality', 'Difficulty', 'For Credit', 'Attendance', 'Would Take Again', 'Grade', 'Textbook', 'Online Class', 'Comment']
+header = ['professor_name','TakeAgain%','Overall_Difficulty','Rating','Date','Course', 'Review Date', 'Review Year','Quality', 'Difficulty', 'For Credit', 'Attendance', 'Would Take Again', 'Grade', 'Textbook', 'Online Class', 'Comment']
 with open(f'{professor_name} Reviews.csv','w',newline='',encoding='UTF8') as f:
     writer = csv.writer(f)
     writer.writerow(header)
 
 counter = 0
-print("Creating csv...")
+print("Creating xlsx...")
 #reads review data, removes unnecessary tags, exports to CSV
 for i in range(len(reviews)):
     #replaces previous value with NULL incase of no response in review
@@ -68,6 +82,7 @@ for i in range(len(reviews)):
         review_quality = new_list[3]
         review_difficulty = new_list[5]
         review_date = filter_data.convert_date(new_list[1])
+        review_year = filter_data.getYear(new_list[1])
         if 'For Credit' in j:
             review_for_credit = new_list[i+1]
         if 'Attendance' in j:
@@ -82,13 +97,13 @@ for i in range(len(reviews)):
             review_online     = new_list[i+1]
         review_comment    = new_list[i-1]
     
-    review_dict = {'professor_name':professor_name,'takeAgain%' : takeAgain,'Total Difficulty' : Difficulty,'Total Rating' : rating,
-    'Scrape Date' : scrapedate,'blank' : ' ','course': new_list[0], 'review_date': review_date,'review_quality': review_quality,
+    review_dict = {'professor_name':professor_name,'takeAgain%' : takeAgain,'Total Difficulty' : Overall_Difficulty,'Total Rating' : rating,
+    'Scrape Date' : scrapedate,'course': new_list[0], 'review_date': review_date,'review_year' : review_year,'review_quality': review_quality,
     'review_difficulty' : review_difficulty, 'review_for_credit':review_for_credit, 'review_attendance':review_attendance, 
     'review_takeAgain':review_takeAgain, 'review_grade':review_grade, 'review_textbook':review_textbook, 'review_online': review_online,'review_comment':review_comment}
 
     if counter == 1:
-        review_dict = {'professor_name':'','takeAgain%' : '','Total Difficulty' : '','Total Rating' : '','Scrape Date' : '','blank' : ' ','course': course, 'review_date': review_date,'review_quality': review_quality,'review_difficulty' : review_difficulty, 'review_for_credit':review_for_credit, 
+        review_dict = {'professor_name':'','takeAgain%' : '','Total Difficulty' : '','Total Rating' : '','Scrape Date' : '','course': course, 'review_date': review_date,'review_year' : review_year,'review_quality': review_quality,'review_difficulty' : review_difficulty, 'review_for_credit':review_for_credit, 
     'review_attendance':review_attendance, 'review_takeAgain':review_takeAgain, 'review_grade':review_grade, 'review_textbook':review_textbook, 'review_online': review_online,'review_comment':review_comment}
         
 
@@ -99,4 +114,7 @@ for i in range(len(reviews)):
         writer.writerow(data)
         counter = 1
 
+
+grapher.graphit(professor_name)
+os.remove(f'{professor_name} Reviews.csv')
 print(f"{professor_name} Reviews.csv saved")

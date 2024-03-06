@@ -22,6 +22,14 @@ def convert_date(date_string):
     date_obj = date_obj.strftime("%Y-%m-%d")
     return date_obj
 
+def getYear(date_string):
+    day = date_string.split(' ')[1][:-3]
+    month_abbr = date_string.split(' ')[0][:3]
+    year = date_string.split(' ')[2]
+    date_str = f"{month_abbr}-{day}-{year}"
+    date_obj = datetime.strptime(date_str, '%b-%d-%Y')
+    date_obj = date_obj.strftime("%Y")
+    return date_obj
 
 def whitelist(reviews_process):
     # Use list comprehension to filter out undesired items
