@@ -20,27 +20,27 @@ def scrape_data(browser, url):
     driver.get(url)
 
     time.sleep(5)
-    try: #closes popups
-        button_xpath = "//html/body/div[5]/div/div/button"
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button_xpath))).click()
-    except:
-        pass
-    try:
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="bx-close-inside-1177612"]'))).click()
-    except:
-        pass
-    try:
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="pendo-close-guide-f789ac0a"]'))).click()
-    except:
-        pass
+    # try: #closes popups
+    #     button_xpath = "//html/body/div[5]/div/div/button"
+    #     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button_xpath))).click()
+    # except:
+    #     pass
+    # try:
+    #     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="bx-close-inside-1177612"]'))).click()
+    # except:
+    #     pass
+    # try:
+    #     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="pendo-close-guide-f789ac0a"]'))).click()
+    # except:
+    #     pass
 
     #loads all the reviews
     while(True):
         try:                                                        
-            loadmore = driver.find_element(By.XPATH, "//div[@class= 'react-tabs__tab-panel react-tabs__tab-panel--selected']/button[@class='Buttons__Button-sc-19xdot-1 PaginationButton__StyledPaginationButton-txi1dr-1 eUNaBX']")
-            driver.execute_script("arguments[0].scrollIntoView();",loadmore)
+            loadmore = driver.find_element(By.XPATH, "//div[@class= 'react-tabs__tab-panel react-tabs__tab-panel--selected']/button[@class='Buttons__Button-sc-19xdot-1 PaginationButton__StyledPaginationButton-txi1dr-1 joxzkC']")
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});",loadmore)
             ActionChains(driver)\
-                .scroll_by_amount(0, -100)\
+                .scroll_by_amount(0, 0)\
                 .perform()
             time.sleep(1)
             try:

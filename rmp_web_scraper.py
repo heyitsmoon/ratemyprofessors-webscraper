@@ -6,6 +6,7 @@ import time
 import csv
 import os
 import grapher
+import ptables
 #place the url  for the professor you want to get data about
 #URL= 'https://www.ratemyprofessors.com/professor/######' 
 #type in chrome or firefox for whichever one you have
@@ -37,13 +38,20 @@ Soup = scrape_data.scrape_data(browser, URL)
 
 # Gets information about the professor
 professor_name = filter_data.get_professor_name(Soup)
-feedback_numbers = Soup.find_all('div',{'class': 'FeedbackItem__FeedbackNumber-uof32n-1 kkESWs'})
-rating = Soup.find('div',{'class': 'RatingValue__Numerator-qw8sqy-2 liyUjw'}).get_text().strip()
-takeAgain = feedback_numbers[0].text.strip()[:2]
+feedback_numbers = Soup.find_all('div',{'class': 'FeedbackItem__FeedbackNumber-uof32n-1 ecFgca'})
+rating = Soup.find('div',{'class': 'RatingValue__Numerator-qw8sqy-2 duhvlP'}).get_text().strip()
+for div in feedback_numbers:
+    text = div.get_text(strip=True)
+    if "%" in text:
+        takeAgain = text
+        break
+print(takeAgain)
 Overall_Difficulty= feedback_numbers[1].text.strip()
 scrapedate =  datetime.today()
 scrapedate = scrapedate.strftime("%Y-%m-%d")
-reviews = Soup.find_all('div',{'class': 'Rating__StyledRating-sc-1rhvpxz-1 jcIQzP'})
+reviews = Soup.find_all('div',{'class': 'Rating__StyledRating-sc-1rhvpxz-1 jOZHgV'})
+
+
 
 #creates the CSV for professor reviews with the following header
 header = ['professor_name','TakeAgain%','Overall_Difficulty','Rating','Date','Course', 'Review Date', 'Review Year','Quality', 'Difficulty', 'For Credit', 'Attendance', 'Would Take Again', 'Grade', 'Textbook', 'Online Class', 'Comment']
@@ -65,19 +73,22 @@ for i in range(len(reviews)):
     review_comment    = 'NULL'
     reviews_process = reviews[i].get_text().strip()
     reviews_process = reviews_process.split('\n')
-
     new_list = filter_data.whitelist(reviews_process)
     
     # removes empty space in list
     new_list = filter_data.strip(new_list)
-    
+
     # removes repeated course and date values in list
     new_list = filter_data.remove_duplicates(new_list)
-    
+    print(new_list)
+    # with open("reviews.txt", "w") as f:
+    #     for text in new_list:
+    #         f.write(text + "\n")
+    #print(reviews_process)
     for i,j in enumerate(new_list):
         # ignores cases where coursename was not written properly
-        if len(new_list[0]) > 9 or len(new_list[0]) < 6: 
-            continue
+        # if len(new_list[0]) > 9 or len(new_list[0]) < 6: 
+        #     continue
         course = new_list[0]
         review_quality = new_list[3]
         review_difficulty = new_list[5]
@@ -90,18 +101,27 @@ for i in range(len(reviews)):
         if 'Would Take Again' in j:
             review_takeAgain  = new_list[i+1]
         if 'Grade' in j:
+            new_list[i+1] = new_list[i+1].replace("+","")
+            new_list[i+1] = new_list[i+1].replace("-","")
             review_grade      = new_list[i+1]
         if 'Textbook' in j:
             review_textbook   = new_list[i+1]
         if 'Online Class' in j:
             review_online     = new_list[i+1]
-        review_comment    = new_list[i-1]
+        review_comment    = new_list[i-3]
     
     review_dict = {'professor_name':professor_name,'takeAgain%' : takeAgain,'Total Difficulty' : Overall_Difficulty,'Total Rating' : rating,
     'Scrape Date' : scrapedate,'course': new_list[0], 'review_date': review_date,'review_year' : review_year,'review_quality': review_quality,
     'review_difficulty' : review_difficulty, 'review_for_credit':review_for_credit, 'review_attendance':review_attendance, 
     'review_takeAgain':review_takeAgain, 'review_grade':review_grade, 'review_textbook':review_textbook, 'review_online': review_online,'review_comment':review_comment}
 
+    for key, value in review_dict.items():
+        print(key + " " + value)
+        if (value == "Helpful"):
+            review_dict[key] = ""
+        print(key + " " + review_dict[key])
+        
+    
     if counter == 1:
         review_dict = {'professor_name':'','takeAgain%' : '','Total Difficulty' : '','Total Rating' : '','Scrape Date' : '','course': course, 'review_date': review_date,'review_year' : review_year,'review_quality': review_quality,'review_difficulty' : review_difficulty, 'review_for_credit':review_for_credit, 
     'review_attendance':review_attendance, 'review_takeAgain':review_takeAgain, 'review_grade':review_grade, 'review_textbook':review_textbook, 'review_online': review_online,'review_comment':review_comment}
@@ -117,4 +137,7 @@ for i in range(len(reviews)):
 
 grapher.graphit(professor_name)
 os.remove(f'{professor_name} Reviews.csv')
-print(f"{professor_name} Reviews.csv saved")
+
+#pt_creator.create_pivot(f'{professor_name} Reviews.xlsx')
+ptables.create_pivot(f'{professor_name} Reviews.xlsx')
+print(f"{professor_name} Reviews.xlsx saved")

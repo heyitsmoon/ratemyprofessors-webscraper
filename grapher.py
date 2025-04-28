@@ -1,6 +1,6 @@
 import pandas as pd
 import openpyxl
-import pt_creator
+#import pt_creator
 from openpyxl.chart import LineChart, BarChart, Reference
 from openpyxl.chart.label import DataLabelList
 
@@ -72,8 +72,8 @@ def Textbook(sheet, dashboard):
     bar_chart.y_axis.title = "Count"
     bar_chart.x_axis.title = "Textbook Required"
 
-    cats = Reference(sheet, min_col=8,min_row=2,max_row=3)
-    data = Reference(sheet, min_col=9, min_row=2, max_row=3)
+    cats = Reference(sheet, min_col=5,min_row=2,max_row=3)
+    data = Reference(sheet, min_col=6, min_row=2, max_row=3)
     
 
     bar_chart.add_data(data)
@@ -94,8 +94,8 @@ def GradeReported(sheet,dashboard):
     bar_chart.y_axis.title = "Count"
     bar_chart.x_axis.title = "Grades"
     
-    cats = Reference(sheet, min_col=10, min_row=2, max_row=14)
-    data = Reference(sheet, min_col=11, min_row=2, max_row=14)
+    cats = Reference(sheet, min_col=7, min_row=2, max_row=5) #used to be 14
+    data = Reference(sheet, min_col=8, min_row=2, max_row=5) #used to be 14
 
     bar_chart.add_data(data)
     bar_chart.set_categories(cats)
@@ -157,4 +157,4 @@ def graphit(professor_name):
     
     wb.save(f"{professor_name} Reviews.xlsx")
     
-    pt_creator.create_pivots(f"{professor_name} Reviews.xlsx")
+    #pt_creator.create_pivots(f"{professor_name} Reviews.xlsx")
